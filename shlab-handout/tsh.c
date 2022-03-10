@@ -164,7 +164,6 @@ void eval(char* cmdline) {
     char* argv[MAXARGS];
     int bg;
     pid_t pid;
-    sigset_t mask;
 
     bg = parseline(cmdline, argv);
     if (argv[0] == NULL)
@@ -301,7 +300,7 @@ void sigchld_handler(int sig) {
     pid_t pid;
     int status;
 
-    while ((pid = waitpid(-1, &status, 0)) > 0) {
+    while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
         if (WIFSTOPPED(status)) {
             getjobpid(jobs, pid)->state = ST;
         } else {
