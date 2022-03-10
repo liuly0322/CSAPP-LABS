@@ -307,8 +307,8 @@ void sigchld_handler(int sig) {
         } else {
             deletejob(jobs, pid);
         }
-        return;
     }
+    return;
 }
 
 /*
