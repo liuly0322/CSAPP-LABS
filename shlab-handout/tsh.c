@@ -317,10 +317,11 @@ void sigchld_handler(int sig) {
  */
 void sigint_handler(int sig) {
     pid_t f_pid = fgpid(jobs);
-    printf("Job [%d] (%d) terminated by signal %d\n", pid2jid(f_pid), f_pid,
-           sig);
-    if (f_pid)
+    if (f_pid) {
+        printf("Job [%d] (%d) terminated by signal %d\n", pid2jid(f_pid), f_pid,
+               sig);
         kill(-f_pid, sig);
+    }
     return;
 }
 
@@ -331,9 +332,11 @@ void sigint_handler(int sig) {
  */
 void sigtstp_handler(int sig) {
     pid_t f_pid = fgpid(jobs);
-    printf("Job [%d] (%d) stopped by signal %d\n", pid2jid(f_pid), f_pid, sig);
-    if (f_pid)
+    if (f_pid) {
+        printf("Job [%d] (%d) stopped by signal %d\n", pid2jid(f_pid), f_pid,
+               sig);
         kill(-f_pid, sig);
+    }
     return;
 }
 
