@@ -90,16 +90,16 @@ tsh> jobs
 tsh> ./mysplit 4
 Job [1] (10000) terminated by signal 2
 tsh> /bin/ps a
-  PID TTY      STAT   TIME COMMAND
-25181 pts/3    S      0:00 -usr/local/bin/tcsh -i
-26239 pts/3    S      0:00 make tshrefout
-26240 pts/3    S      0:00 /bin/sh -c make tests > tshref.out 2>&1
-26241 pts/3    S      0:00 make tests
-26295 pts/3    S      0:00 perl ./sdriver.pl -t trace11.txt -s ./tsh -a -p
-26296 pts/3    S      0:00 ./tsh -p
-26301 pts/3    R      0:00 /bin/ps a
-
-
+    PID TTY      STAT   TIME COMMAND
+   2666 tty2     Ssl+   0:00 /usr/libexec/gdm-x-session --run-script env GNOME_SHELL_SESSION_MODE=ubuntu /usr/bin/gnome-session --session=ubuntu
+   2668 tty2     Sl+    4:51 /usr/lib/xorg/Xorg vt2 -displayfd 3 -auth /run/user/1000/gdm/Xauthority -nolisten tcp -background none -noreset -keeptty -novtswitch -verbose 3
+   2682 tty2     Sl+    0:00 /usr/libexec/gnome-session-binary --systemd --session=ubuntu
+   4310 pts/0    Ss     0:04 /usr/bin/fish
+  27858 pts/0    S+     0:00 make test11
+  27859 pts/0    S+     0:00 /bin/sh -c ./sdriver.pl -t trace11.txt -s ./tsh -a "-p"
+  27860 pts/0    S+     0:00 /usr/bin/perl ./sdriver.pl -t trace11.txt -s ./tsh -a -p
+  27861 pts/0    S+     0:00 ./tsh -p
+  27875 pts/0    R      0:00 /bin/ps a
 ./sdriver.pl -t trace12.txt -s ./tsh -a "-p"
 #
 # trace12.txt - Forward SIGTSTP to every process in foreground process group
@@ -109,18 +109,18 @@ Job [1] (10000) stopped by signal 20
 tsh> jobs
 [1] (10000) Stopped ./mysplit 4 
 tsh> /bin/ps a
-  PID TTY      STAT   TIME COMMAND
-25181 pts/3    S      0:00 -usr/local/bin/tcsh -i
-26239 pts/3    S      0:00 make tshrefout
-26240 pts/3    S      0:00 /bin/sh -c make tests > tshref.out 2>&1
-26241 pts/3    S      0:00 make tests
-26302 pts/3    S      0:00 perl ./sdriver.pl -t trace12.txt -s ./tsh -a -p
-26303 pts/3    S      0:00 ./tsh -p
-26305 pts/3    T      0:00 ./mysplit 4
-26306 pts/3    T      0:00 ./mysplit 4
-26309 pts/3    R      0:00 /bin/ps a
-
-
+    PID TTY      STAT   TIME COMMAND
+   2666 tty2     Ssl+   0:00 /usr/libexec/gdm-x-session --run-script env GNOME_SHELL_SESSION_MODE=ubuntu /usr/bin/gnome-session --session=ubuntu
+   2668 tty2     Sl+    4:51 /usr/lib/xorg/Xorg vt2 -displayfd 3 -auth /run/user/1000/gdm/Xauthority -nolisten tcp -background none -noreset -keeptty -novtswitch -verbose 3
+   2682 tty2     Sl+    0:00 /usr/libexec/gnome-session-binary --systemd --session=ubuntu
+   4310 pts/0    Ss     0:04 /usr/bin/fish
+  27876 pts/0    S+     0:00 make test12
+  27877 pts/0    S+     0:00 /bin/sh -c ./sdriver.pl -t trace12.txt -s ./tsh -a "-p"
+  27878 pts/0    S+     0:00 /usr/bin/perl ./sdriver.pl -t trace12.txt -s ./tsh -a -p
+  27879 pts/0    S+     0:00 ./tsh -p
+  27881 pts/0    T      0:00 ./mysplit 4
+  27882 pts/0    T      0:00 ./mysplit 4
+  27893 pts/0    R      0:00 /bin/ps a
 ./sdriver.pl -t trace13.txt -s ./tsh -a "-p"
 #
 # trace13.txt - Restart every stopped process in process group
@@ -130,30 +130,30 @@ Job [1] (10000) stopped by signal 20
 tsh> jobs
 [1] (10000) Stopped ./mysplit 4 
 tsh> /bin/ps a
-  PID TTY      STAT   TIME COMMAND
-25181 pts/3    S      0:00 -usr/local/bin/tcsh -i
-26239 pts/3    S      0:00 make tshrefout
-26240 pts/3    S      0:00 /bin/sh -c make tests > tshref.out 2>&1
-26241 pts/3    S      0:00 make tests
-26310 pts/3    S      0:00 perl ./sdriver.pl -t trace13.txt -s ./tsh -a -p
-26311 pts/3    S      0:00 ./tsh -p
-26313 pts/3    T      0:00 ./mysplit 4
-26314 pts/3    T      0:00 ./mysplit 4
-26317 pts/3    R      0:00 /bin/ps a
-
-
+    PID TTY      STAT   TIME COMMAND
+   2666 tty2     Ssl+   0:00 /usr/libexec/gdm-x-session --run-script env GNOME_SHELL_SESSION_MODE=ubuntu /usr/bin/gnome-session --session=ubuntu
+   2668 tty2     Sl+    4:51 /usr/lib/xorg/Xorg vt2 -displayfd 3 -auth /run/user/1000/gdm/Xauthority -nolisten tcp -background none -noreset -keeptty -novtswitch -verbose 3
+   2682 tty2     Sl+    0:00 /usr/libexec/gnome-session-binary --systemd --session=ubuntu
+   4310 pts/0    Ss     0:04 /usr/bin/fish
+  27894 pts/0    S+     0:00 make test13
+  27895 pts/0    S+     0:00 /bin/sh -c ./sdriver.pl -t trace13.txt -s ./tsh -a "-p"
+  27896 pts/0    S+     0:00 /usr/bin/perl ./sdriver.pl -t trace13.txt -s ./tsh -a -p
+  27897 pts/0    S+     0:00 ./tsh -p
+  27899 pts/0    T      0:00 ./mysplit 4
+  27900 pts/0    T      0:00 ./mysplit 4
+  27907 pts/0    R      0:00 /bin/ps a
 tsh> fg %1
 tsh> /bin/ps a
-  PID TTY      STAT   TIME COMMAND
-25181 pts/3    S      0:00 -usr/local/bin/tcsh -i
-26239 pts/3    S      0:00 make tshrefout
-26240 pts/3    S      0:00 /bin/sh -c make tests > tshref.out 2>&1
-26241 pts/3    S      0:00 make tests
-26310 pts/3    S      0:00 perl ./sdriver.pl -t trace13.txt -s ./tsh -a -p
-26311 pts/3    S      0:00 ./tsh -p
-26320 pts/3    R      0:00 /bin/ps a
-
-
+    PID TTY      STAT   TIME COMMAND
+   2666 tty2     Ssl+   0:00 /usr/libexec/gdm-x-session --run-script env GNOME_SHELL_SESSION_MODE=ubuntu /usr/bin/gnome-session --session=ubuntu
+   2668 tty2     Sl+    4:51 /usr/lib/xorg/Xorg vt2 -displayfd 3 -auth /run/user/1000/gdm/Xauthority -nolisten tcp -background none -noreset -keeptty -novtswitch -verbose 3
+   2682 tty2     Sl+    0:00 /usr/libexec/gnome-session-binary --systemd --session=ubuntu
+   4310 pts/0    Ss     0:04 /usr/bin/fish
+  27894 pts/0    S+     0:00 make test13
+  27895 pts/0    S+     0:00 /bin/sh -c ./sdriver.pl -t trace13.txt -s ./tsh -a "-p"
+  27896 pts/0    S+     0:00 /usr/bin/perl ./sdriver.pl -t trace13.txt -s ./tsh -a -p
+  27897 pts/0    S+     0:00 ./tsh -p
+  27916 pts/0    R      0:00 /bin/ps a
 ./sdriver.pl -t trace14.txt -s ./tsh -a "-p"
 #
 # trace14.txt - Simple error handling

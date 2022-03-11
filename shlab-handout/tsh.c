@@ -173,7 +173,7 @@ void eval(char* cmdline) {
         if ((pid = fork()) == 0) {
             setpgid(0, 0);
             if (execve(argv[0], argv, environ) < 0) {
-                printf("%s: Command not found.\n", argv[0]);
+                printf("%s: Command not found\n", argv[0]);
                 exit(0);
             }
         }
@@ -278,7 +278,7 @@ void do_bgfg(char** argv) {
     struct job_t* job;
     if (sscanf(argv[1], "%%%d", &id) > 0) {
         if (!(job = getjobjid(jobs, id))) {
-            printf("(%%%d): No such job\n", id);
+            printf("%%%d: No such job\n", id);
             return;
         }
     } else if (sscanf(argv[1], "%d", &id) > 0) {
@@ -287,7 +287,7 @@ void do_bgfg(char** argv) {
             return;
         }
     } else {
-        printf("argument must be a PID or %%jobid\n");
+        printf("%s: argument must be a PID or %%jobid\n", argv[0]);
         return;
     }
 
@@ -330,8 +330,14 @@ void sigchld_handler(int sig) {
 
     while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
         if (WIFSTOPPED(status)) {
+            printf("Job [%d] (%d) stopped by signal %d\n", pid2jid(pid), pid,
+                   WSTOPSIG(status));
             getjobpid(jobs, pid)->state = ST;
         } else {
+            if (WIFSIGNALED(status)) {
+                printf("Job [%d] (%d) terminated by signal %d\n", pid2jid(pid),
+                       pid, WTERMSIG(status));
+            }
             deletejob(jobs, pid);
         }
     }
@@ -346,8 +352,6 @@ void sigchld_handler(int sig) {
 void sigint_handler(int sig) {
     pid_t f_pid = fgpid(jobs);
     if (f_pid) {
-        printf("Job [%d] (%d) terminated by signal %d\n", pid2jid(f_pid), f_pid,
-               sig);
         kill(-f_pid, sig);
     }
     return;
@@ -361,8 +365,6 @@ void sigint_handler(int sig) {
 void sigtstp_handler(int sig) {
     pid_t f_pid = fgpid(jobs);
     if (f_pid) {
-        printf("Job [%d] (%d) stopped by signal %d\n", pid2jid(f_pid), f_pid,
-               sig);
         kill(-f_pid, sig);
     }
     return;
