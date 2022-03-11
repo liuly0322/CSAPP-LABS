@@ -310,7 +310,23 @@ unsigned floatScale2(unsigned uf) {
  *   Rating: 4
  */
 int floatFloat2Int(unsigned uf) {
-    return 0;
+    int expo = ((uf & 0x7f800000) >> 23) - 127;
+    int sign = uf & (1 << 31);
+    int frac = (uf & 0x007fffff) | 0x00800000;
+    int int_val = 0;
+
+    if (expo < 0) {  // 取整为 0
+        return 0;
+    }
+    if (expo > 31) {  // 超过 32 位，溢出
+        return 0x80000000;
+    }
+    if (expo < 23) {
+        int_val = frac >> (23 - expo);
+    } else if (expo > 23) {
+        int_val = frac << (expo - 23);
+    }
+    return sign ? -int_val : int_val;
 }
 /*
  * floatPower2 - Return bit-level equivalent of the exporession 2.0^x
