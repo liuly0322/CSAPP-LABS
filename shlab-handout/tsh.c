@@ -309,7 +309,6 @@ void waitfg(pid_t pid) {
     while (job->state == FG) {
         sleep(1);
     }
-
     return;
 }
 
