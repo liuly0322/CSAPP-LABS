@@ -12,7 +12,7 @@
  * This is the default path where the driver will look for the
  * default tracefiles. You can override it at runtime with the -t flag.
  */
-#define TRACEDIR "/afs/cs/project/ics2/im/labs/malloclab/traces/"
+#define TRACEDIR "./traces/"
 
 /*
  * This is the list of default tracefiles in TRACEDIR that the driver
@@ -21,6 +21,15 @@
  * your students to implement realloc, you can delete the last two
  * traces.
  */
+#define DEBUG
+#ifdef DEBUG
+
+#define DEFAULT_TRACEFILES \
+  "short1-bal.rep",\
+  "short2-bal.rep"
+
+#else
+
 #define DEFAULT_TRACEFILES \
   "amptjp-bal.rep",\
   "cccp-bal.rep",\
@@ -33,6 +42,8 @@
   "binary2-bal.rep",\
   "realloc-bal.rep",\
   "realloc2-bal.rep"
+
+#endif
 
 /*
  * This constant gives the estimated performance of the libc malloc
