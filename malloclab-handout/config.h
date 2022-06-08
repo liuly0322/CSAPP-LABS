@@ -21,7 +21,7 @@
  * your students to implement realloc, you can delete the last two
  * traces.
  */
-#define DEBUG
+// #define DEBUG
 #ifdef DEBUG
 
 #define DEFAULT_TRACEFILES \
@@ -35,13 +35,13 @@
   "cccp-bal.rep",\
   "cp-decl-bal.rep",\
   "expr-bal.rep",\
-  "coalescing-bal.rep",\
-  "random-bal.rep",\
-  "random2-bal.rep",\
   "binary-bal.rep",\
   "binary2-bal.rep",\
-  "realloc-bal.rep",\
-  "realloc2-bal.rep"
+  "coalescing-bal.rep",\
+  "random-bal.rep",\
+  "random2-bal.rep"
+  // "realloc-bal.rep",\
+  // "realloc2-bal.rep"
 
 #endif
 

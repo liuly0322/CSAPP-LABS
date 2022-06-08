@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 
         findCache(tag, caches[group_idx]);
         if (oper[0] == 'M')
-            findCache(tag, caches[group_idx]);
+            hit++;
     }
     printSummary(hit, miss, eviction);
     return 0;

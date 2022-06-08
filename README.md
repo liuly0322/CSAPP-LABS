@@ -4,8 +4,6 @@
 
 目前进度：
 
-- attack, bomb, cache, data, shell
+- attack, bomb, cache, data, shell, malloc, proxy
 
-- malloc 和 proxy 待做
-
-- architecture 咕咕
+- architecture 兴趣不大，咕咕
