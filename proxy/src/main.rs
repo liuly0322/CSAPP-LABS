@@ -6,38 +6,14 @@ use std::sync::Arc;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpListener;
 use tokio::net::TcpStream;
-use tokio::sync::mpsc;
-use tokio::sync::oneshot;
+use tokio::sync::Mutex;
 
-enum CacheOperation {
-    Get,
-    Put,
-}
+const MAX_CACHE_SIZE: usize = 1048576;
 
-struct Message {
-    operation: CacheOperation,
-    uri: String,
-    buffer: Option<Arc<Vec<u8>>>,
-    tx: Option<oneshot::Sender<Option<Arc<Vec<u8>>>>>,
-}
-
-impl Message {
-    pub fn new(
-        operation: CacheOperation,
-        uri: String,
-        buffer: Option<Arc<Vec<u8>>>,
-        tx: Option<oneshot::Sender<Option<Arc<Vec<u8>>>>>,
-    ) -> Self {
-        Message {
-            operation,
-            uri,
-            buffer,
-            tx,
-        }
-    }
-}
-
-async fn handle_client(mut client: TcpStream, tx: mpsc::Sender<Message>) -> Option<()> {
+async fn handle_client(
+    mut client: TcpStream,
+    cache: Arc<Mutex<lru::LruCache<String, Arc<Vec<u8>>>>>,
+) -> Option<()> {
     // read from tcpstream
     let mut data_recv = [0_u8; 1024];
     let size = client.read(&mut data_recv).await.ok()?;
@@ -45,29 +21,19 @@ async fn handle_client(mut client: TcpStream, tx: mpsc::Sender<Message>) -> Opti
     // parse the http request
     let request: Vec<u8> = data_recv[0..size].to_vec();
     let request = std::str::from_utf8(request.as_slice()).ok()?;
-
     let mut tokens = request.split_whitespace();
+
     let method = tokens.next()?;
     let uri = tokens.next()?;
-
     let uri = Uri::parse(uri).ok()?;
     let host = uri.authority()?.host().as_str();
     let port = uri.authority()?.port().unwrap_or("80");
     let path = uri.path();
 
     // see if in cache
-    let (buffer_tx, buffer_rx) = oneshot::channel();
-    tx.send(Message::new(
-        CacheOperation::Get,
-        uri.to_string(),
-        None,
-        Some(buffer_tx),
-    ))
-    .await
-    .ok()?;
-
-    let buffer = buffer_rx.await.unwrap();
-    // if in cache
+    let mut cache_guard = cache.lock().await;
+    let buffer = cache_guard.get(uri.as_str()).cloned();
+    drop(cache_guard);
     if buffer.is_some() {
         client.write_all(buffer.unwrap().as_slice()).await.ok()?;
         println!("finish proxy by cache: {}", client.peer_addr().ok()?);
@@ -91,47 +57,31 @@ async fn handle_client(mut client: TcpStream, tx: mpsc::Sender<Message>) -> Opti
     origin.write_all(header).await.ok()?;
 
     let mut buffer: Vec<u8> = vec![];
+    let mut buffer_valid = true;
     let mut origin_recv = [0_u8; 1024];
     while let Ok(size) = origin.read(&mut origin_recv).await {
         if size == 0 {
             break;
         }
-
-        buffer.append(&mut origin_recv[0..size].to_vec());
+        if buffer_valid {
+            buffer.append(&mut origin_recv[0..size].to_vec());
+            if buffer.len() > MAX_CACHE_SIZE {
+                buffer_valid = false;
+            }
+        }
         client.write_all(&origin_recv[0..size]).await.ok()?;
     }
 
     // put value in cache
-    tx.send(Message::new(
-        CacheOperation::Put,
-        uri.to_string(),
-        Some(Arc::new(buffer)),
-        None,
-    ))
-    .await
-    .ok()?;
+    if buffer_valid {
+        let mut cache_guard = cache.lock().await;
+        cache_guard.put(uri.to_string(), Arc::new(buffer));
+        drop(cache_guard);
+    }
 
     // stream exit
-    println!("finish proxy to server: {}", client.peer_addr().ok()?);
+    println!("finish proxy from server: {}", client.peer_addr().ok()?);
     Some(())
-}
-
-async fn handle_cache(mut rx: mpsc::Receiver<Message>) -> Result<()> {
-    let mut cache: lru::LruCache<String, Arc<Vec<u8>>> = lru::LruCache::new(32);
-
-    loop {
-        // loop for waiting cache operation request
-        let received = rx.recv().await.unwrap();
-        match received.operation {
-            CacheOperation::Get => {
-                let buffer = cache.get(&received.uri).cloned();
-                received.tx.unwrap().send(buffer).unwrap();
-            }
-            CacheOperation::Put => {
-                cache.put(received.uri, received.buffer.unwrap());
-            }
-        }
-    }
 }
 
 #[tokio::main]
@@ -146,16 +96,21 @@ async fn main() -> Result<()> {
     let listener = TcpListener::bind(format!("0.0.0.0:{}", port)).await?;
     println!("Server listening on port {}", port);
 
-    let (op_tx, op_rx) = mpsc::channel(128);
-    tokio::task::spawn(async move { handle_cache(op_rx).await });
+    // cache
+    let cache: lru::LruCache<String, Arc<Vec<u8>>> = lru::LruCache::new(32);
+    let cache = Arc::new(Mutex::new(cache));
 
     // wait for clients
     loop {
         let (stream, _) = listener.accept().await?;
-        println!("New connection: {}", stream.peer_addr()?);
+        let addr = stream.peer_addr()?;
+        println!("New connection: {}", addr);
 
         // handle new client
-        let op_tx = op_tx.clone();
-        tokio::task::spawn(async move { handle_client(stream, op_tx).await });
+        let cache = cache.clone();
+        tokio::task::spawn(async move {
+            handle_client(stream, cache).await;
+            println!("Connection closed: {}", addr);
+        });
     }
 }
